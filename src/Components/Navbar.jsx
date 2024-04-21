@@ -1,5 +1,7 @@
 import React,{useEffect,useState,useRef} from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { fetchSearch } from '../api/youtubeapi';
 import axios from 'axios'
 import $ from 'jquery';
 var textvalue = "";
@@ -23,8 +25,9 @@ sessionStorage.setItem("hi",1);
  
  }
  function ToMusicPlayer(event){
+  setShowElement(false);
 sessionStorage.setItem("video_id",event.currentTarget.id);
-navigate("/player");
+navigate("/player/:"+event.currentTarget.id);
  }
  function Updatefocusout(event){
   textvalue = event.target.value;
@@ -33,6 +36,38 @@ navigate("/player");
  }
  const [showElement, setShowElement] = useState(false);
  const elementRef = useRef(null);
+ const {data:ytsearchdata,refetch:ytsearchrefetch,isLoading:ytsearchLoading} = useQuery({
+  queryKey: ["ytsearch"],
+  queryFn : () => fetchSearch(textvalue),
+  enabled : false,
+
+});
+useEffect(() => {
+  if(!ytsearchLoading && ytsearchdata != null ){
+ 
+    var responsedata = ytsearchdata.items; 
+    var count= 0;
+    responsedata.filter(
+      (vdinfo) =>{ 
+        count++;
+        const sercht_res_jsx = <a onClick={ToMusicPlayer} id={vdinfo.id.videoId}  className="flex px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-700 searchdropdown">
+        <div className="flex-shrink-0">
+          <img className="rounded-full w-11 h-11" src={vdinfo.snippet.thumbnails.high.url} alt="Jese image"/>
+          
+        </div>
+        <div className="w-full ps-3">
+            <div className="text-gray-500 text-sm mb-1.5 dark:text-gray-400"> <span className="font-semibold text-gray-900 dark:text-white">{vdinfo.snippet.title}</span></div>
+            <div className="text-xs text-blue-600 dark:text-blue-500">{vdinfo.snippet.channelTitle}</div>
+        </div>
+      </a>; 
+       
+        setsearch_datah(search_data => [...search_data, sercht_res_jsx])
+       
+      }
+    );
+    setShowElement(true)
+  }
+}, [ytsearchdata])
 
  useEffect(() => {
    function handleClickOutside(event) {
@@ -51,13 +86,13 @@ navigate("/player");
      document.removeEventListener('click', handleClickOutside);
    };
  }, []);
-
-    useEffect(() => {
+ 
+   /* useEffect(() => {
   
   let config = {
     method: 'get',
     maxBodyLength: Infinity,
-    url: 'https://www.googleapis.com/youtube/v3/search?q='+textvalue+' song&part=snippet&type=video&videoEmbeddable=true&key=AIzaSyB_wVUnTgR8ZDVUHyrw5YZ5zme9oVKIeow',
+    url: 'https://www.googleapis.com/youtube/v3/search?q='+textvalue+' song&part=snippet&type=video&videoEmbeddable=true&key=AIzaSyB_wVUnTgR8ZDVUHyrw5YZ5zme9oVKIeowremove',
     headers: { }
   };
   
@@ -76,7 +111,6 @@ navigate("/player");
           <div className="text-xs text-blue-600 dark:text-blue-500">{vdinfo.snippet.channelTitle}</div>
       </div>
     </a>; 
-     /* search_res_var= search_res_var + sercht_res_jsx;*/
       //$("#search_results").append(sercht_res_jsx);
       setsearch_datah(search_data => [...search_data, sercht_res_jsx])
       console.log(vdinfo); }
@@ -272,7 +306,7 @@ navigate("/player");
   }
 
   
-    }, [searchky]);
+    }, [searchky]);*/
     
 
 return(
@@ -316,7 +350,7 @@ return(
       )}
         
     </div>
-    <button type="submit" onClick={UpdateOnKeyUP} id="showButton"   class="inline-flex items-center py-2.5 px-3 ms-2 text-sm font-medium text-white bg-blue-700 rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" >
+    <button type="submit" onClick={() => ytsearchrefetch()} id="showButton"   class="inline-flex items-center py-2.5 px-3 ms-2 text-sm font-medium text-white bg-blue-700 rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" >
         <svg class="w-4 h-4 me-2" id="showButton" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
             <path stroke="currentColor" id="showButton" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
         </svg>Search
