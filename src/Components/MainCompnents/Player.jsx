@@ -76,8 +76,7 @@ function updateProgress(progressValue) {
     
   
     return (
-      <audio id="audioBtn" onPlay={handlePlay}
-      onPause={handlePause} src={music} className="audioBtn"  preload="auto">
+      <audio id="audioBtn"  src={music} className="audioBtn"  preload="auto">
       <source src={music} id="track" type="audio/mp4"></source>
     </audio>
     );
@@ -94,7 +93,7 @@ function updateProgress(progressValue) {
     
 
     
-    audioRef.src = track.src;
+    //audioRef.src = track.src;
         audioRef.load();
         audioRef.play();
     //targetAudio.play();
@@ -118,6 +117,8 @@ function updateProgress(progressValue) {
 const isAudioPlaying = !document.querySelector('audio').paused;
 if(isAudioPlaying){
   audioRef.pause();
+}else{
+  setisplaying("false");
 }
       //setisplaying("false");
     }
@@ -154,6 +155,8 @@ if(isAudioPlaying){
     // Cause the audio element to load the new source
     //audio.load();
     //document.getElementsByClassName("audioBtn").play();
+   // audio.pause();
+    
   })
   .catch((error) => {
     console.log(error);
