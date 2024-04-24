@@ -249,6 +249,12 @@ if(isAudioPlaying){
       <span>0:00</span>
       <span>{endTime}</span>
     </div>
+    <div class="flex justify-between mt-2 text-sm text-gray-600">
+    <span><i class="fa-solid fa-rotate-right"></i></span>
+      <span><a href={music} target="_blank" download="realname.mp4"><i class="fa-solid fa-download"></i></a></span>
+   
+    </div>
+    
   </div>
 </div>
    </div>
