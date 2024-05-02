@@ -56,6 +56,10 @@ function Player(){
   };
   const { username } = useParams();
 if(":"+sessionStorage.getItem("currentvdID")!=username){
+  //if (isPlaying) {
+    audioRef.current.pause();
+    setIsPlaying(false);
+  //}
   setloadmusic(loadmusic => [loadmusic+1])
 }
 sessionStorage.setItem("currentvdID",sessionStorage.getItem("video_id"));
@@ -71,6 +75,7 @@ function updateProgress(progressValue) {
   const videoDuration = parseInt(minutes, 10) * 60 + parseInt(seconds); // Replace with actual video ID
   const progress = (currentTime / videoDuration) * 100;
   document.querySelector('#musicloader').style.width = `${progress}%`;
+  setIsPlaying(true);
     //progressBar.style.width = `${progressValue}%`; // Set the width as a percentage
 
   }catch(error){
@@ -102,7 +107,7 @@ function updateProgress(progressValue) {
   // Function to handle play event
   const handlePlay = () => {
   // alert("play");
-   setisplaying("true");
+   //setisplaying("true");
   };
   /*function StreamingAudioPlayer() {
     
@@ -126,7 +131,8 @@ function updateProgress(progressValue) {
     const track = document.getElementById("track");
     if(document.getElementById("audioBtn").readyState == 4 || document.getElementById("audioBtn").readyState == 3 )
     {
-    
+      audioRef.pause();
+      setIsPlaying(false);
         audioRef.load();
         //audioRef.play();
 
