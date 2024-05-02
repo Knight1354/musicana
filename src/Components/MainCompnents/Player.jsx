@@ -56,10 +56,10 @@ function Player(){
   };
   const { username } = useParams();
 if(":"+sessionStorage.getItem("currentvdID")!=username){
-  //if (isPlaying) {
-    audioRef.current.pause();
+  if (isPlaying) {
+    document.getElementById("audioBtn").pause();
     setIsPlaying(false);
-  //}
+  }
   setloadmusic(loadmusic => [loadmusic+1])
 }
 sessionStorage.setItem("currentvdID",sessionStorage.getItem("video_id"));
