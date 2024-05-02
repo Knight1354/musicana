@@ -1,7 +1,11 @@
  import image from '../assets/Logo/Secondlogo.png'
  import {  Link } from "react-router-dom";
+ import React, { useState, useEffect,useRef } from 'react';
+
 function Sidebar(){
-    
+   useEffect(() => {
+      initFlowbite();
+    }, []);
     return(
 <>
 <button data-drawer-target="logo-sidebar" data-drawer-toggle="logo-sidebar" aria-controls="logo-sidebar" type="button" class="inline-flex items-center p-2 mt-2 ms-3 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
@@ -24,7 +28,7 @@ function Sidebar(){
                   <path d="M16.975 11H10V4.025a1 1 0 0 0-1.066-.998 8.5 8.5 0 1 0 9.039 9.039.999.999 0 0 0-1-1.066h.002Z"/>
                   <path d="M12.5 0c-.157 0-.311.01-.565.027A1 1 0 0 0 11 1.02V10h8.975a1 1 0 0 0 1-.935c.013-.188.028-.374.028-.565A8.51 8.51 0 0 0 12.5 0Z"/>
                </svg>
-               <span class="ms-3">Homeee</span>
+               <span class="ms-3">Home</span>
             </Link>
          </li>
          <li>
