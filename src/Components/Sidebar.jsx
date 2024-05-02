@@ -1,4 +1,4 @@
- import image from '../assets/Logo/Musicana_transparent.png'
+ import image from '../assets/Logo/Secondlogo.png'
  import {  Link } from "react-router-dom";
 function Sidebar(){
     

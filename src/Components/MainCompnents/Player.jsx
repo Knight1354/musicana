@@ -20,9 +20,40 @@ function parseDuration(durationString) {
     throw new Error("Invalid ISO 8601 duration format");
   }
 }
+function convertSecondsToMMSS(currentTime) {
+  const minutes = Math.floor(currentTime / 60);
+  const seconds = Math.floor(currentTime % 60);
+
+  // Ensure two-digit format for minutes and seconds
+  const formattedMinutes = minutes.toString().padStart(2, "0");
+  const formattedSeconds = seconds.toString().padStart(2, "0");
+
+  return `${formattedMinutes}:${formattedSeconds}`;
+}
 function Player(){
+  const playIcon= "fa-solid fa-play fa-xl w-6";
+  const pauseIcon= "fa-solid fa-pause fa-xl w-6";
+  const [musicicon,setmusicicon] = useState(true);
+  const [curmusictime,setcurmusictime] = useState("0:00");
  const [loadmusic,setloadmusic]=useState(0);
+ const [endTime,setendTime]=useState("0:00");
+ var endTimeCal= "0:00";
   // State variable to hold session data
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef(null);
+  const togglePlayPause = () => {
+    if (isPlaying) {
+      audioRef.current.pause();
+    } else {
+      audioRef.current.play();
+      document.querySelector('audio').addEventListener('timeupdate', updateProgress); 
+    document.querySelector('audio').addEventListener("ended", function(){
+    document.querySelector('#musicloader').style.width = "100%";
+
+ })
+    }
+    setIsPlaying(!isPlaying);
+  };
   const { username } = useParams();
 if(":"+sessionStorage.getItem("currentvdID")!=username){
   setloadmusic(loadmusic => [loadmusic+1])
@@ -35,13 +66,16 @@ sessionStorage.setItem("currentvdID",sessionStorage.getItem("video_id"));
 function updateProgress(progressValue) {
   try{
     const currentTime =  document.querySelector('audio').currentTime;
-    const [minutes, seconds] = endTime.split(":");
+    setcurmusictime(convertSecondsToMMSS(currentTime));
+    const [minutes, seconds] = endTimeCal.split(":");
   const videoDuration = parseInt(minutes, 10) * 60 + parseInt(seconds); // Replace with actual video ID
   const progress = (currentTime / videoDuration) * 100;
-  progressBar.style.width = `${progress}%`;
+  document.querySelector('#musicloader').style.width = `${progress}%`;
     //progressBar.style.width = `${progressValue}%`; // Set the width as a percentage
 
-  }catch{}
+  }catch(error){
+    console.log(error);
+  }
 }
 
 // Simulate progress increase (replace with your actual logic)
@@ -70,38 +104,38 @@ function updateProgress(progressValue) {
   // alert("play");
    setisplaying("true");
   };
-  function StreamingAudioPlayer() {
+  /*function StreamingAudioPlayer() {
     
   
     
   
     return (
-      <audio id="audioBtn"  src={music} className="audioBtn"  preload="auto">
+      <audio id="audioBtn" ref={audioRef} src={music} className="audioBtn"  preload="auto" onEnded={() => setIsPlaying(false)}>
       <source src={music} id="track" type="audio/mp4"></source>
     </audio>
     );
-  }
-   const [isPlaying, setisplaying]=useState("");
-   
-  let initAudio = () => {
+  }*/
+   //const [isPlaying, setisplaying]=useState("");
+  
+   let firstLoadAudio = () => {
     //const targetAudio = document.getElementsByClassName("audioBtn")[0];
     //targetAudio.play();
   
-  if (isPlaying!=="true" || isPlaying==="") {
+  //if (document.querySelector('audio').paused) {
     const audioRef = document.getElementById("audioBtn");
     const track = document.getElementById("track");
+    if(document.getElementById("audioBtn").readyState == 4 || document.getElementById("audioBtn").readyState == 3 )
+    {
     
-
-    
-    //audioRef.src = track.src;
         audioRef.load();
-        audioRef.play();
-    //targetAudio.play();
-    //setisplaying("true");
+        //audioRef.play();
+
     document.querySelector('audio').addEventListener('timeupdate', updateProgress); 
+    togglePlayPause();
     document.querySelector('audio').addEventListener("ended", function(){
-      document.querySelector('#musicloader').style.width = "100%";
- });
+    document.querySelector('#musicloader').style.width = "100%";
+
+ });}
    /* let currentProgress = 0;
     const intervalId = setInterval(() => {
       currentProgress += 5; // Increase progress by 5% each interval
@@ -110,17 +144,35 @@ function updateProgress(progressValue) {
         clearInterval(intervalId);
       }
     }, 100);*/
+    
+  };
+
+  let initAudio = () => {
+    //const targetAudio = document.getElementsByClassName("audioBtn")[0];
+    //targetAudio.play();
+  
+  if (document.querySelector('audio').paused) {
+    const audioRef = document.getElementById("audioBtn");
+    const track = document.getElementById("track");
+    if(document.getElementById("audioBtn").readyState == 4 || document.getElementById("audioBtn").readyState == 3 )
+    {
+    
+
+      document.getElementById("audioBtn").play()
+  //setmusicicon(false)
+
+    }
+   
     } else {
       //clearInterval(intervalId);
-      
-    const audioRef = document.getElementById("audioBtn");
-const isAudioPlaying = !document.querySelector('audio').paused;
-if(isAudioPlaying){
-  audioRef.pause();
-}else{
-  setisplaying("false");
-}
-      //setisplaying("false");
+      if(document.getElementById("audioBtn").readyState == 4 || document.getElementById("audioBtn").readyState == 3 )
+    {
+      document.getElementById("audioBtn").pause()
+  setmusicicon(true)
+
+    }
+    
+
     }
   };
   const [data, setData] = useState([]);
@@ -130,7 +182,7 @@ if(isAudioPlaying){
  const [imgurl,setimgurl]=useState([]);
  const [music,setmusic]=useState([]);
  const [audio, setAudio] = useState(new Audio(music));
- const [endTime,setendTime]=useState(0.00);
+ 
   useEffect(() => {
     let data = '';
   let  config = {
@@ -146,8 +198,13 @@ if(isAudioPlaying){
     setmusic(response.data.musicUrl);
     const timer = setTimeout(() => {
       try{
-    initAudio();
+        firstLoadAudio();
+        togglePlayPause();
+        document.querySelector('audio').addEventListener('timeupdate', updateProgress); 
+    document.querySelector('audio').addEventListener("ended", function(){
+    document.querySelector('#musicloader').style.width = "100%";
 
+ })
       }catch{}
       }, 100);
     //element.querySelector('audio')
@@ -174,6 +231,7 @@ if(isAudioPlaying){
   settitle(responsedata.snippet.title);
   setimgurl(responsedata.snippet.thumbnails.high.url);
   setsubtitle(responsedata.channelTitle);
+  endTimeCal =  parseDuration(responsedata.contentDetails.duration);
   setendTime(parseDuration(responsedata.contentDetails.duration));
     //console.log(response.data);
   })
@@ -202,7 +260,9 @@ if(isAudioPlaying){
    <div class="p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700">
       
 
-   <StreamingAudioPlayer/>
+   <audio id="audioBtn" ref={audioRef} src={music} className="audioBtn"  preload="auto" onEnded={() => setIsPlaying(false)}>
+      <source src={music} id="track" type="audio/mp4"></source>
+    </audio>
     <div class="bg-gray-100 p-4 flex justify-center items-center h-screen">
   <div class="bg-white p-8 rounded-lg shadow-md w-80">
     <img  src={imgurl}
@@ -221,15 +281,11 @@ if(isAudioPlaying){
           </g>
         </svg>
       </button>
-      <button className="play" onClick={initAudio} class="p-4 rounded-full bg-gray-200 hover:bg-gray-300 focus:outline-none mx-4">
-        <svg width="64px" height="64px" viewBox="0 0 24 24" class="w-6 h-6 text-gray-600" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-          <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-          <g id="SVGRepo_iconCarrier">
-            <path d="M2 6C2 4.11438 2 3.17157 2.58579 2.58579C3.17157 2 4.11438 2 6 2C7.88562 2 8.82843 2 9.41421 2.58579C10 3.17157 10 4.11438 10 6V18C10 19.8856 10 20.8284 9.41421 21.4142C8.82843 22 7.88562 22 6 22C4.11438 22 3.17157 22 2.58579 21.4142C2 20.8284 2 19.8856 2 18V6Z" fill="#000000"></path>
-            <path d="M14 6C14 4.11438 14 3.17157 14.5858 2.58579C15.1716 2 16.1144 2 18 2C19.8856 2 20.8284 2 21.4142 2.58579C22 3.17157 22 4.11438 22 6V18C22 19.8856 22 20.8284 21.4142 21.4142C20.8284 22 19.8856 22 18 22C16.1144 22 15.1716 22 14.5858 21.4142C14 20.8284 14 19.8856 14 18V6Z" fill="#000000"></path>
-          </g>
-        </svg>
+      <button className="play" onClick={togglePlayPause} class="p-4 rounded-full bg-gray-200 hover:bg-gray-300 focus:outline-none mx-4">
+      
+        <i class={isPlaying ? pauseIcon : playIcon}></i>
+      
+      
       </button>
       <button class="p-3 rounded-full bg-gray-200 hover:bg-gray-300 focus:outline-none">
         <svg width="64px" height="64px" viewBox="0 0 24 24" class="w-4 h-4 text-gray-600" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -246,11 +302,11 @@ if(isAudioPlaying){
       <div id="musicloader" class="bg-teal-500 h-2 rounded-full" style={{"width" : "0%"}}></div>
     </div>
     <div class="flex justify-between mt-2 text-sm text-gray-600">
-      <span>0:00</span>
+      <span>{curmusictime}</span>
       <span>{endTime}</span>
     </div>
     <div class="flex justify-between mt-2 text-sm text-gray-600">
-    <span><i class="fa-solid fa-rotate-right"></i></span>
+    <span onClick={firstLoadAudio}><i class="fa-solid fa-rotate-right"></i></span>
       <span><a href={music} target="_blank" download="realname.mp4"><i class="fa-solid fa-download"></i></a></span>
    
     </div>
