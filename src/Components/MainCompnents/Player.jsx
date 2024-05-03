@@ -75,7 +75,7 @@ function updateProgress(progressValue) {
   const videoDuration = parseInt(minutes, 10) * 60 + parseInt(seconds); // Replace with actual video ID
   const progress = (currentTime / videoDuration) * 100;
   document.querySelector('#musicloader').style.width = `${progress}%`;
-  setIsPlaying(true);
+  //setIsPlaying(true);
     //progressBar.style.width = `${progressValue}%`; // Set the width as a percentage
 
   }catch(error){
