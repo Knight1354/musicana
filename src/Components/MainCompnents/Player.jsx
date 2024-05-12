@@ -4,7 +4,8 @@ import Sidebar from "../Sidebar";
 import axios from 'axios';
 import "../MainCompnents/Sontracker.css";
 import { Link, useParams } from 'react-router-dom';
-
+import { Navigate, useNavigate } from 'react-router-dom';
+var nextsong="";
 function parseDuration(durationString) {
   const match = durationString.match(/^PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?$/);
   if (match) {
@@ -31,6 +32,8 @@ function convertSecondsToMMSS(currentTime) {
   return `${formattedMinutes}:${formattedSeconds}`;
 }
 function Player(){
+const navigate = useNavigate();
+
   const playIcon= "fa-solid fa-play fa-xl w-6";
   const pauseIcon= "fa-solid fa-pause fa-xl w-6";
   const [musicicon,setmusicicon] = useState(true);
@@ -65,7 +68,10 @@ if(":"+sessionStorage.getItem("currentvdID")!=username){
 sessionStorage.setItem("currentvdID",sessionStorage.getItem("video_id"));
   
   const progressBar = document.querySelector('#musicloader'); // Select the progress bar element
-
+  function ToMusicPlayer(event){
+  sessionStorage.setItem("video_id",nextsong);
+  navigate("/player/:"+nextsong);
+   }
 // Define a function to update progress
 function updateProgress(progressValue) {
   try{
@@ -202,6 +208,7 @@ function updateProgress(progressValue) {
   .then((response) => {
     audio.pause();
     setmusic(response.data.musicUrl);
+    nextsong = response.data.nextSong
     const timer = setTimeout(() => {
       try{
         firstLoadAudio();
@@ -293,7 +300,7 @@ function updateProgress(progressValue) {
       
       
       </button>
-      <button class="p-3 rounded-full bg-gray-200 hover:bg-gray-300 focus:outline-none">
+      <button onClick={ToMusicPlayer} class="p-3 rounded-full bg-gray-200 hover:bg-gray-300 focus:outline-none">
         <svg width="64px" height="64px" viewBox="0 0 24 24" class="w-4 h-4 text-gray-600" fill="none" xmlns="http://www.w3.org/2000/svg">
           <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
           <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
