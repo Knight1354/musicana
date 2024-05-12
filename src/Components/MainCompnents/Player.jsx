@@ -38,7 +38,7 @@ const navigate = useNavigate();
   const pauseIcon= "fa-solid fa-pause fa-xl w-6";
   const [musicicon,setmusicicon] = useState(true);
   const [curmusictime,setcurmusictime] = useState("0:00");
- const [loadmusic,setloadmusic]=useState(0);
+ const [loadmusic,setloadmusic]                                                                                                                                            =useState(0);
  const [endTime,setendTime]=useState("0:00");
  var endTimeCal= "0:00";
   // State variable to hold session data
@@ -68,10 +68,17 @@ if(":"+sessionStorage.getItem("currentvdID")!=username){
 sessionStorage.setItem("currentvdID",sessionStorage.getItem("video_id"));
   
   const progressBar = document.querySelector('#musicloader'); // Select the progress bar element
-  function ToMusicPlayer(event){
+  function NextSong(event){
+  sessionStorage.setItem("prevvideo_id", sessionStorage.getItem("video_id"));
   sessionStorage.setItem("video_id",nextsong);
   navigate("/player/:"+nextsong);
    }
+   function PreviousSong(event){
+    if(sessionStorage.getItem("prevvideo_id") != "" && sessionStorage.getItem("prevvideo_id") !=null  && sessionStorage.getItem("prevvideo_id") !="null"){
+      navigate("/player/:"+sessionStorage.getItem("prevvideo_id"));
+      sessionStorage.setItem("video_id",sessionStorage.getItem("prevvideo_id"));
+    }
+     }
 // Define a function to update progress
 function updateProgress(progressValue) {
   try{
@@ -284,7 +291,7 @@ function updateProgress(progressValue) {
     <h2 class="text-xl font-semibold text-center">{title}</h2>
     
     <div class="mt-6 flex justify-center items-center">
-      <button class="p-3 rounded-full bg-gray-200 hover:bg-gray-300 focus:outline-none">
+      <button onClick={PreviousSong}  class="p-3 rounded-full bg-gray-200 hover:bg-gray-300 focus:outline-none">
         <svg width="64px" height="64px" viewBox="0 0 24 24" class="w-4 h-4 text-gray-600" fill="none" xmlns="http://www.w3.org/2000/svg" transform="matrix(-1, 0, 0, 1, 0, 0)">
           <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
           <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
@@ -300,7 +307,7 @@ function updateProgress(progressValue) {
       
       
       </button>
-      <button onClick={ToMusicPlayer} class="p-3 rounded-full bg-gray-200 hover:bg-gray-300 focus:outline-none">
+      <button onClick={NextSong} class="p-3 rounded-full bg-gray-200 hover:bg-gray-300 focus:outline-none">
         <svg width="64px" height="64px" viewBox="0 0 24 24" class="w-4 h-4 text-gray-600" fill="none" xmlns="http://www.w3.org/2000/svg">
           <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
           <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
