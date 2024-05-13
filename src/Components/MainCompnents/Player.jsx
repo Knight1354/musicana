@@ -207,7 +207,7 @@ function updateProgress(progressValue) {
   let  config = {
     method: 'get',
     maxBodyLength: Infinity,
-    url: 'https://cloudy-ox-earmuffs.cyclic.app/music/'+sessionStorage.getItem("video_id"),
+    url: 'https://musicana-server.vercel.app/music/'+sessionStorage.getItem("video_id"),
     headers: {}
   };
   
