@@ -6,6 +6,7 @@ import "../MainCompnents/Sontracker.css";
 import { Link, useParams } from 'react-router-dom';
 import { Navigate, useNavigate } from 'react-router-dom';
 var nextsong="";
+var loopMusicvar="";
 function parseDuration(durationString) {
   const match = durationString.match(/^PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?$/);
   if (match) {
@@ -40,6 +41,7 @@ const navigate = useNavigate();
   const [curmusictime,setcurmusictime] = useState("0:00");
  const [loadmusic,setloadmusic]                                                                                                                                            =useState(0);
  const [endTime,setendTime]=useState("0:00");
+ const [loopMusic,setloopMusic] = useState(false);
  var endTimeCal= "0:00";
   // State variable to hold session data
   const [isPlaying, setIsPlaying] = useState(false);
@@ -165,7 +167,9 @@ function updateProgress(progressValue) {
     }, 100);*/
     
   };
-
+  let toggleLoop = () => {
+    setloopMusic(!loopMusic);
+  };
   let initAudio = () => {
     //const targetAudio = document.getElementsByClassName("audioBtn")[0];
     //targetAudio.play();
@@ -201,7 +205,7 @@ function updateProgress(progressValue) {
  const [imgurl,setimgurl]=useState([]);
  const [music,setmusic]=useState([]);
  const [audio, setAudio] = useState(new Audio(music));
- 
+ loopMusicvar = loopMusic;
   useEffect(() => {
     let data = '';
   let  config = {
@@ -223,7 +227,9 @@ function updateProgress(progressValue) {
         document.querySelector('audio').addEventListener('timeupdate', updateProgress); 
     document.querySelector('audio').addEventListener("ended", function(){
     document.querySelector('#musicloader').style.width = "100%";
-
+    if(loopMusicvar){
+      firstLoadAudio();
+    }
  })
       }catch{}
       }, 100);
@@ -277,14 +283,12 @@ function updateProgress(progressValue) {
 <Sidebar/>
         <div class="p-4 sm:ml-64">
         <Navbar/>
-   <div class="p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700">
       
 
    <audio id="audioBtn" ref={audioRef} src={music} className="audioBtn"  preload="auto" onEnded={() => setIsPlaying(false)}>
       <source src={music} id="track" type="audio/mp4"></source>
     </audio>
-    <div class="bg-gray-100 p-4 flex justify-center items-center h-screen">
-  <div class="bg-white p-8 rounded-lg shadow-md w-80">
+  <div class="bg-white p-8 rounded-lg shadow-md w-100">
     <img  src={imgurl}
             alt="LogoMusicImage" class="w-64 h-64 mx-auto rounded-lg mb-4 shadow-lg shadow-teal-50"/>
     
@@ -326,14 +330,13 @@ function updateProgress(progressValue) {
       <span>{endTime}</span>
     </div>
     <div class="flex justify-between mt-2 text-sm text-gray-600">
-    <span onClick={firstLoadAudio}><i class="fa-solid fa-rotate-right"></i></span>
-      <span><a href={music} target="_blank" download="realname.mp4"><i class="fa-solid fa-download"></i></a></span>
+    <span class="flex flex-col" onClick={toggleLoop}><i class={loopMusic ? "fa-solid fa-rotate-right text-green-500":"fa-solid fa-rotate-right"} ></i><p>Loop</p></span>
+      <span class="flex flex-col"><a class="flex flex-col items-end" href={music} target="_blank" download="realname.mp4"><i class="fa-solid fa-download"></i></a><p>Download</p></span>
    
     </div>
     
-  </div>
+
 </div>
-   </div>
 </div>
 </>
     );
